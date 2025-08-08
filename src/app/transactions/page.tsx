@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Calendar from 'react-calendar';
-import 'react-calendar/dist/Calendar.css'; // Import calendar styles
+import TransactionCalendar from '@/components/TransactionCalendar';
 
 interface Transaction {
   id: number;
@@ -53,7 +52,7 @@ const TransactionsPage = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ type, amount, category, description }),
+        body: JSON.stringify({ type, amount, category, description, createdAt: selectedDate }),
       });
 
       if (!res.ok) {
@@ -100,9 +99,10 @@ const TransactionsPage = () => {
     <div>
       <div className="row">
         <div className="col-md-4">
-          <Calendar
-            onChange={setSelectedDate}
-            value={selectedDate}
+          <TransactionCalendar 
+            transactions={transactions}
+            selectedDate={selectedDate}
+            onDateChange={setSelectedDate}
           />
         </div>
         <div className="col-md-8">

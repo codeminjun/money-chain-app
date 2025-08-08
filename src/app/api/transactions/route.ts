@@ -20,7 +20,7 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    const { type, amount, category, description } = data;
+    const { type, amount, category, description, createdAt } = data;
 
     if (!type || !amount || !category) {
       return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
@@ -32,6 +32,7 @@ export async function POST(request: Request) {
         amount: parseFloat(amount),
         category,
         description,
+        createdAt: createdAt ? new Date(createdAt) : new Date(),
       },
     });
     return NextResponse.json(newTransaction, { status: 201 });
