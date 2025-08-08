@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
-import { TransactionController } from '@/controllers/transactionController';
+import { AuthController } from '@/controllers/authController';
 import { withMiddleware } from '@/middleware/validation';
 
 export const GET = withMiddleware(async (request: NextRequest) => {
-  return TransactionController.getSummary(request);
+  return AuthController.getProfile(request);
 });

@@ -32,7 +32,7 @@ const TransactionsPage = () => {
         throw new Error('Failed to fetch transactions');
       }
       const data = await res.json();
-      setTransactions(data);
+      setTransactions(data.data || data);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'An unknown error occurred');
     } finally {

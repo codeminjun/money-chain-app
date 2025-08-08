@@ -40,8 +40,9 @@ const Dashboard = () => {
         const summaryData = await summaryRes.json();
         const transactionsData = await transactionsRes.json();
 
-        setSummary(summaryData);
-        setTransactions(transactionsData);
+        // Handle new API response structure
+        setSummary(summaryData.data?.summary || summaryData);
+        setTransactions(transactionsData.data || transactionsData);
 
       } catch (err) {
         setError(err instanceof Error ? err.message : 'An unknown error occurred');
