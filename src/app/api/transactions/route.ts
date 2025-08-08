@@ -40,3 +40,25 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Failed to create transaction' }, { status: 500 });
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get('id');
+
+    if (!id) {
+      return NextResponse.json({ error: 'Transaction ID is required' }, { status: 400 });
+    }
+
+    await prisma.transaction.delete({
+      where: {
+        id: parseInt(id),
+      },
+    });
+
+    return NextResponse.json({ message: 'Transaction deleted successfully' }, { status: 200 });
+  } catch (error) {
+    console.error('Error deleting transaction:', error);
+    return NextResponse.json({ error: 'Failed to delete transaction' }, { status: 500 });
+  }
+}

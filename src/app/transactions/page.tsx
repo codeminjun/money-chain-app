@@ -68,6 +68,24 @@ const TransactionsPage = () => {
     }
   };
 
+  const handleDelete = async (id: number) => {
+    if (window.confirm('Are you sure you want to delete this transaction?')) {
+      try {
+        const res = await fetch(`/api/transactions?id=${id}`, {
+          method: 'DELETE',
+        });
+
+        if (!res.ok) {
+          throw new Error('Failed to delete transaction');
+        }
+
+        fetchTransactions(); // Refetch transactions to update the list
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An unknown error occurred');
+      }
+    }
+  };
+
   return (
     <div>
       <h1>Add New Transaction</h1>
@@ -128,6 +146,7 @@ const TransactionsPage = () => {
               <th>Amount</th>
               <th>Category</th>
               <th>Description</th>
+              <th>Actions</th>
             </tr>
           </thead>
           <tbody>
@@ -142,6 +161,11 @@ const TransactionsPage = () => {
                 <td>{t.amount.toLocaleString()}원</td>
                 <td>{t.category}</td>
                 <td>{t.description}</td>
+                <td>
+                  <button className="btn btn-danger btn-sm" onClick={() => handleDelete(t.id)}>
+                    Delete
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
