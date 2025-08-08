@@ -117,7 +117,7 @@ export class TransactionController {
         );
       }
 
-      const { type, amount, category, description, createdAt } = validation.data;
+      const { type, amount, category, description, createdAt } = validation.data as TransactionCreateInput;
 
       const transaction = await db.transaction.create({
         data: {

@@ -17,8 +17,6 @@ model User {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   transactions Transaction[]
-  
-  @@map("users")
 }
 
 model Transaction {
@@ -31,6 +29,4 @@ model Transaction {
   description String?
   userId      Int?     // Optional for backward compatibility
   user        User?    @relation(fields: [userId], references: [id])
-  
-  @@map("transactions")
 }
