@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Calendar from 'react-calendar';
+import 'react-calendar/dist/Calendar.css'; // Import calendar styles
 
 interface Transaction {
   id: number;
@@ -15,6 +17,7 @@ const TransactionsPage = () => {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
   // Form state
   const [type, setType] = useState('EXPENSE');
@@ -86,91 +89,108 @@ const TransactionsPage = () => {
     }
   };
 
+  const filteredTransactions = transactions.filter(t => {
+    const transactionDate = new Date(t.createdAt);
+    return transactionDate.getFullYear() === selectedDate.getFullYear() &&
+           transactionDate.getMonth() === selectedDate.getMonth() &&
+           transactionDate.getDate() === selectedDate.getDate();
+  });
+
   return (
     <div>
-      <h1>Add New Transaction</h1>
-      <form onSubmit={handleSubmit} className="card p-3 my-4">
-        <div className="row g-3 align-items-center">
-          <div className="col-md-2">
-            <select className="form-select" value={type} onChange={(e) => setType(e.target.value)}>
-              <option value="EXPENSE">Expense</option>
-              <option value="INCOME">Income</option>
-            </select>
-          </div>
-          <div className="col-md-2">
-            <input
-              type="number"
-              className="form-control"
-              placeholder="Amount"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              required
-            />
-          </div>
-          <div className="col-md-3">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Category"
-              value={category}
-              onChange={(e) => setCategory(e.target.value)}
-              required
-            />
-          </div>
-          <div className="col-md-3">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Description (optional)"
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-            />
-          </div>
-          <div className="col-md-2">
-            <button type="submit" className="btn btn-primary w-100">Add</button>
-          </div>
+      <div className="row">
+        <div className="col-md-4">
+          <Calendar
+            onChange={setSelectedDate}
+            value={selectedDate}
+          />
         </div>
-      </form>
+        <div className="col-md-8">
+          <h1>Add New Transaction</h1>
+          <form onSubmit={handleSubmit} className="card p-3 my-4">
+            <div className="row g-3 align-items-center">
+              <div className="col-md-2">
+                <select className="form-select" value={type} onChange={(e) => setType(e.target.value)}>
+                  <option value="EXPENSE">Expense</option>
+                  <option value="INCOME">Income</option>
+                </select>
+              </div>
+              <div className="col-md-2">
+                <input
+                  type="number"
+                  className="form-control"
+                  placeholder="Amount"
+                  value={amount}
+                  onChange={(e) => setAmount(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="col-md-3">
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Category"
+                  value={category}
+                  onChange={(e) => setCategory(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="col-md-3">
+                <input
+                  type="text"
+                  className="form-control"
+                  placeholder="Description (optional)"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                />
+              </div>
+              <div className="col-md-2">
+                <button type="submit" className="btn btn-primary w-100">Add</button>
+              </div>
+            </div>
+          </form>
 
-      {error && <p className="text-danger">Error: {error}</p>}
+          {error && <p className="text-danger">Error: {error}</p>}
 
-      <h1>Transactions</h1>
-      {loading ? (
-        <p>Loading...</p>
-      ) : (
-        <table className="table table-striped">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Type</th>
-              <th>Amount</th>
-              <th>Category</th>
-              <th>Description</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {transactions.map((t) => (
-              <tr key={t.id}>
-                <td>{new Date(t.createdAt).toLocaleDateString()}</td>
-                <td>
-                  <span className={`badge ${t.type === 'INCOME' ? 'bg-success' : 'bg-danger'}`}>
-                    {t.type}
-                  </span>
-                </td>
-                <td>{t.amount.toLocaleString()}원</td>
-                <td>{t.category}</td>
-                <td>{t.description}</td>
-                <td>
-                  <button className="btn btn-danger btn-sm" onClick={() => handleDelete(t.id)}>
-                    Delete
-                  </button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
+          <h1>Transactions for {selectedDate.toLocaleDateString()}</h1>
+          {loading ? (
+            <p>Loading...</p>
+          ) : (
+            <table className="table table-striped">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>Amount</th>
+                  <th>Category</th>
+                  <th>Description</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredTransactions.map((t) => (
+                  <tr key={t.id}>
+                    <td>{new Date(t.createdAt).toLocaleDateString()}</td>
+                    <td>
+                      <span className={`badge ${t.type === 'INCOME' ? 'bg-success' : 'bg-danger'}`}>
+                        {t.type}
+                      </span>
+                    </td>
+                    <td>{t.amount.toLocaleString()}원</td>
+                    <td>{t.category}</td>
+                    <td>{t.description}</td>
+                    <td>
+                      <button className="btn btn-danger btn-sm" onClick={() => handleDelete(t.id)}>
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
